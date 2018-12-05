@@ -1,0 +1,16 @@
+{
+  "name": "user-auth-example",
+  "version": "0.0.1",
+  "description": "chapter 12 user-auth-example",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "jade": "^1.11.0",
+    "mongodb": "^3.1.10"
+  }
+}
