@@ -6,13 +6,19 @@ const session      = require('express-session');
 
 const app = express();
 
-app.use(bodyParser);
-app.use(cookieParser);
-app.use(session({secret: 'my secret'}));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(session({
+  secret: 'my secret',
+  resave: false,
+  saveUninitialized: true
+}));
 
 app.set('view engine', 'jade');
 
 app.get('/', function (req, res) {
+  console.log('Get /');
   res.render('index', {authenticated: false});
 });
 
