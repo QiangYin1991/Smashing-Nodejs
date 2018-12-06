@@ -17,10 +17,23 @@ app.use(session({
 
 app.set('view engine', 'jade');
 
+/***************************************************/
+
 app.get('/', function (req, res) {
-  console.log('Get /');
+  console.log('[Get /]');
   res.render('index', {authenticated: false});
 });
+
+app.get('/login', function (req, res) {
+  console.log('[Get /login]');
+  res.render('login');
+});
+
+app.get('/signup', function (req, res) {
+  res.render('signup');
+});
+
+/**************************************************/
 
 app.listen(3000, function() {
   console.log("server listened on 3000");
