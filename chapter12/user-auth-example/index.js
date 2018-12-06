@@ -5,6 +5,10 @@ const cookieParser = require('cookie-parser');
 const session      = require('express-session');
 
 const app = express();
+const mongoClient = mongodb.MongoClient;
+
+
+/***********************************************************/
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -18,19 +22,57 @@ app.use(session({
 app.set('view engine', 'jade');
 
 /***************************************************/
+mongoClient.connect('mongodb://yq:yq911101@59.110.230.92:27017', {useNewUrlParser:true}, function(err, db) {
+  if (err) throw err;
+
+  console.log('connect to mongodb success');
+  const curDB = db.db('smashingnode');
+  app.users = curDB.createCollection('users', function(err, coll) {
+    if (err) throw err;
+
+    app.users = coll;
+    console.log('app.users:' + app.users);
+  });
+});
+
 
 app.get('/', function (req, res) {
   console.log('[Get /]');
-  res.render('index', {authenticated: false});
+  const auth = req.session.loggedIn;
+  res.render('index', {authenticated: auth});
 });
 
-app.get('/login', function (req, res) {
+app.get('/login/:signupEmail', function (req, res) {
   console.log('[Get /login]');
-  res.render('login');
+  res.render('login', {signupEmail: req.params.signupEmail});
+});
+
+app.get('/logout', function (req, res) {
+  req.session.loggedIn = null;
+  res.redirect('/');
 });
 
 app.get('/signup', function (req, res) {
   res.render('signup');
+});
+
+app.post('/signup', function (req, res, next) {
+  console.log('[POST /signup]');
+  app.users.insert(req.body.user, function (err, doc) {
+    if (err) return next(err);
+    console.log('doc' + JSON.stringify(doc));
+    res.redirect('/login/' + doc.ops[0].email);
+  })
+});
+
+app.post('/login', function (req, res, next) {
+  app.users.findOne({email: req.body.user.email, password:req.body.user.password}, function (err, doc) {
+    if (err) return next(err);
+    if (!doc) return res.send('<p>User not found. Go back and try again</p>');
+    console.log('[POST /login] doc:', JSON.stringify(doc));
+    req.session.loggedIn = doc._id.toString();
+    res.redirect('/');
+  });
 });
 
 /**************************************************/
