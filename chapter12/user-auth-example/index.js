@@ -3,6 +3,7 @@ const mongodb      = require('mongodb');
 const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session      = require('express-session');
+const ObjectID     = require('mongodb').ObjectID;
 
 const app = express();
 const mongoClient = mongodb.MongoClient;
@@ -23,7 +24,7 @@ app.use(function(req, res, next){
   if (req.session.loggedIn) {
     res.locals.authenticated = true;
     console.log('loggedIn:' + req.session.loggedIn);
-    app.users.findOne({_id: {"$oid": req.session.loggedIn}}, function (err, doc) {
+    app.users.findOne({_id: ObjectID(req.session.loggedIn)}, function (err, doc) {
       if (err) throw next(err);
       console.log('doc:' + JSON.stringify(doc));
       res.locals.me = {};
