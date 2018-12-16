@@ -19,6 +19,23 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(function(req, res, next){
+  if (req.session.loggedIn) {
+    res.locals.authenticated = true;
+    console.log('loggedIn:' + req.session.loggedIn);
+    app.users.findOne({_id: {"$oid": req.session.loggedIn}}, function (err, doc) {
+      if (err) throw next(err);
+      console.log('doc:' + JSON.stringify(doc));
+      res.locals.me = {};
+      res.locals.me.name = doc.first + ' ' + doc.last;
+      next();
+    })
+  }else {
+    res.locals.authenticated = false;
+    next();
+  }
+});
+
 app.set('view engine', 'jade');
 
 /***************************************************/
@@ -38,8 +55,12 @@ mongoClient.connect('mongodb://yq:yq911101@59.110.230.92:27017', {useNewUrlParse
 
 app.get('/', function (req, res) {
   console.log('[Get /]');
-  const auth = req.session.loggedIn;
-  res.render('index', {authenticated: auth});
+  res.render('index');
+});
+
+app.get('/login', function (req, res) {
+  console.log('[Get /login]');
+  res.render('login');
 });
 
 app.get('/login/:signupEmail', function (req, res) {
