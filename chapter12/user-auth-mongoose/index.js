@@ -88,7 +88,14 @@ app.post('/login', function (req, res, next) {
 
 /**************************************************/
 
-mongoose.connect('mongodb://yq:yq911101@59.110.230.92:27017/smashingnode', {useNewUrlParser:true}, function (err){
+const options = {
+  user: 'yq',
+  pass: 'yq911101',
+  useNewUrlParser: true,
+  auth: {authdb: 'admin'}
+};
+
+mongoose.connect('mongodb://59.110.230.92:27017/smashingnode?authSource=admin', options, function (err){
     if (err) throw err;
 })
 
