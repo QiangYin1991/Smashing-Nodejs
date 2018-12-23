@@ -12,5 +12,6 @@ module.exports = function (opts) {
             res.end(chunk, encoding);
             clearTimeout(timer);
         }
+        next();
     }
 }
