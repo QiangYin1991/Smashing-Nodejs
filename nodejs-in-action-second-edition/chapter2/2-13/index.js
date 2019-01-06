@@ -1,11 +1,15 @@
 const Watcher = require('./watch');
+const fs = require('fs');
 
-const watcher = new Watcher(watchDir, processDir);
+const watchDir = './watch';
+const processedDir = './done';
 
-watcher.on('process', () => {
+const watcher = new Watcher(watchDir, processedDir);
+
+watcher.on('process', (file) => {
     const watchFile = `${watchDir}/${file}`;
     const processedFile = `${processedDir}/${file.toLowerCase()}`;
-    false.rename(watchFile, processedFile, err => {
+    fs.rename(watchFile, processedFile, err => {
         if (err) throw err;
     });
 });

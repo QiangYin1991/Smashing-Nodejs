@@ -12,6 +12,7 @@ class Watcher extends events.EventEmitter {
         fs.readdir(this.watchDir, (err, files) => {
             if (err) throw err;
             for (let index in files) {
+                console.log(`index: ${index}`);
                 this.emit('process', files[index]);
             }
         })
