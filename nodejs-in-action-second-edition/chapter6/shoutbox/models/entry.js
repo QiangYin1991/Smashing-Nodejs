@@ -1,5 +1,9 @@
 const redis = require('redis');
-const db = redis.createClient();
+const db = redis.createClient(16379, '59.110.230.92');
+
+db.AUTH('minigame2019', (msg) => {
+    console.log('connect redis success: ' + msg);
+});
 
 class Entry {
     constructor(obj) {
