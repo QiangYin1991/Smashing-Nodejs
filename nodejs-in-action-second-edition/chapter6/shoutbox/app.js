@@ -7,6 +7,8 @@ var logger = require('morgan');
 var usersRouter = require('./routes/users');
 const entries = require('./routes/entries');
 const validate = require('./middleware/validate');
+const register = require('./routes/register');
+const session = require('express-session');
 
 var app = express();
 
@@ -19,9 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true
+}));
 
-app.use('/', entries.list);
-app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,9 +44,13 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.get('/', entries.list);
 app.get('/post', entries.form);
 app.post('/post', validate.required('entry[title]'),
                   validate.lengthAbove('entry[title]', 4),
                   entries.submit);
+
+app.get('/register', register.form);
+app.post('/register', register.submit);
 
 module.exports = app;
