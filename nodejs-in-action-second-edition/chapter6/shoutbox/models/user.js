@@ -49,6 +49,36 @@ class User {
       });
     })
   }
+
+  static getId(name, cb) {
+    db.get(`user:id:${name}`, cb);
+  }
+
+  static get(id, cb) {
+    db.hgetall(`user:${id}`, (err, user) => {
+      if (err) return cb(err);
+      cb(null, new User(user));
+    });
+  }
+
+  static getByName(name, cb) {
+    User.getId(name, (err, id) => {
+      if (err) return cb(err);
+      User.get(id, cb);
+    });
+  }
+
+  static authenticate(name, pass, cb) {
+    User.getByName(name, (err, user) => {
+      if (err) return cb(err);
+      if (!user.id) return cb();
+      bcrypt.hash(pass, user.salt, (err, hash) => {
+        if (err) return cb(err);
+        if (hash == user.pass) return cb(null, user);
+        cb();
+      })
+    });
+  }
 }
 
 module.exports = User;
