@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var usersRouter = require('./routes/users');
 const entries = require('./routes/entries');
+const validate = require('./middleware/validate');
 
 var app = express();
 
@@ -39,6 +40,8 @@ app.use(function(err, req, res, next) {
 });
 
 app.get('/post', entries.form);
-app.post('/post', entries.submit);
+app.post('/post', validate.required('entry[title]'),
+                  validate.lengthAbove('entry[title]', 4),
+                  entries.submit);
 
 module.exports = app;
